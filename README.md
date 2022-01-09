@@ -1,6 +1,6 @@
 # *** PROJET TESTS : THE AMAZING TRANSLATOR **** #
 ### Description de l'application :
-* L'objectif ce test est la réalisation d'une application permettant à une personne de connaître
+* Cette application permet à une personne de connaître
 la traduction française ou anglaise d'un nombre sous forme numérique situé 
 entre 1 et 30.
   

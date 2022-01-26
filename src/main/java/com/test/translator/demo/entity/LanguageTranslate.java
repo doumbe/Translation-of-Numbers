@@ -3,12 +3,12 @@ package com.test.translator.demo.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Language_Translate")
+@Table(name = "LanguageTranslate")
 public class LanguageTranslate {
 
     @GeneratedValue
     @Id
-    private Integer id;
+    private Long id;
 
     @Column(name = "nbr")
     private Integer nbr;
@@ -18,6 +18,14 @@ public class LanguageTranslate {
 
     @Column(name = "langue")
     private String langue;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Integer getNbr() {
         return nbr;

@@ -3,7 +3,7 @@ package com.test.translator.demo.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "LanguageTranslate")
+@Table(name = "LANGUAGE_TRANSLATE")
 public class LanguageTranslate {
 
     @GeneratedValue
@@ -50,18 +50,6 @@ public class LanguageTranslate {
     public void setLangue(String langue) {
         this.langue = langue;
     }
-
-    /*
-    @Column(name = "frenchLangue")
-    private String FR;
-
-    @Column(name = "englishLangue")
-    private String EN;
-
-    @Column(name = "germanLangue")
-    private String DE;
-*/
-
 
     @Override
     public String toString() {

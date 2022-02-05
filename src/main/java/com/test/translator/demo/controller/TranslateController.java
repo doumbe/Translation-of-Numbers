@@ -30,24 +30,19 @@ public class TranslateController {
 
     @GetMapping("/{langue}/{number}")
     public String toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number) {
-            checkVariables(langue, number);
             LanguageTranslate languageTranslate = languageTranslateRepo.getByLangueAndNbr(langue, number);
-
+            checkVariables(langue, number);
             logger.info("################# languageTranslate {}", languageTranslate);
             String msg = "La Traduction de : " + languageTranslate.getMessage() +" en "+ languageTranslate.getLangue();
             return msg;
     }
-
     private void checkVariables(String langue, Integer nb) {
         if(Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb < 0 || nb>30)) {
             throw new LangueTranslateNotFoundException("Veuillez saisir une langue reconnue et un numero valide (0 et 30) !");
         } else if(Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb >= 0 && nb<= 30)) {
             throw new LangueTranslateNotFoundException("Votre langue n'est pas reconnue !");
-        } else {
+        }  else if (nb<0 || nb>30){
             throw new LangueTranslateNotFoundException("Veuillez saisir un nb entre 0 et 30");
         }
-
     }
-
 }
-

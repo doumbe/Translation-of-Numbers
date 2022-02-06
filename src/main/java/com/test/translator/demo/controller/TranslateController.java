@@ -8,16 +8,16 @@ import com.test.translator.demo.repository.LanguageTranslateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import java.util.Arrays;
-
-import static org.springframework.data.crossstore.ChangeSetPersister.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/translate")
@@ -29,20 +29,32 @@ public class TranslateController {
     private LanguageTranslateRepository languageTranslateRepo;
 
     @GetMapping("/{langue}/{number}")
-    public String toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number) {
+    public ResponseEntity<Object> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number) throws LangueTranslateNotFoundException, LangueTranslateBadRequestException {
+        try {
             LanguageTranslate languageTranslate = languageTranslateRepo.getByLangueAndNbr(langue, number);
-            checkVariables(langue, number);
             logger.info("################# languageTranslate {}", languageTranslate);
-            String msg = "La Traduction de : " + languageTranslate.getMessage() +" en "+ languageTranslate.getLangue();
-            return msg;
+
+            return ResponseEntity.ok("La Traduction de : " + languageTranslate.getMessage() + " en " + languageTranslate.getLangue());
+        } catch (Exception exception) {
+            return checkVariables(langue, number);
+        }
     }
-    private void checkVariables(String langue, Integer nb) {
-        if(Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb < 0 || nb>30)) {
-            throw new LangueTranslateNotFoundException("Veuillez saisir une langue reconnue et un numero valide (0 et 30) !");
-        } else if(Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb >= 0 && nb<= 30)) {
-            throw new LangueTranslateNotFoundException("Votre langue n'est pas reconnue !");
-        }  else if (nb<0 || nb>30){
-            throw new LangueTranslateNotFoundException("Veuillez saisir un nb entre 0 et 30");
+
+    private ResponseEntity<Object> checkVariables(String langue, Integer nb) {
+        Map<String, Object> result = new HashMap<>();
+
+        if (Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb < 0 || nb > 30)) {
+            result.put("msg", "Veuillez saisir une langue reconnue et un numero valide (0 et 30) !");
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        } else if (Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb >= 0 && nb <= 30)) {
+            result.put("msg", "Votre langue n'est pas reconnue !");
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        } else if (nb < 0 || nb > 30) {
+            result.put("msg", "Veuillez saisir un nb entre 0 et 30");
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        } else {
+            result.put("msg", "veuillez saisir une URL valide !");
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 }

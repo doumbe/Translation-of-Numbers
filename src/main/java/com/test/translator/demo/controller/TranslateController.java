@@ -5,9 +5,9 @@ import com.test.translator.demo.enumeration.Language;
 import com.test.translator.demo.exception.LangueTranslateBadRequestException;
 import com.test.translator.demo.exception.LangueTranslateNotFoundException;
 import com.test.translator.demo.repository.LanguageTranslateRepository;
+import com.test.translator.demo.service.LanguageTranslateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,14 +25,19 @@ import java.util.Map;
 public class TranslateController {
 
     private final Logger logger = LoggerFactory.getLogger(TranslateController.class);
+    private final LanguageTranslateService languageTranslateService;
 
-    @Autowired
-    private LanguageTranslateRepository languageTranslateRepo;
+    public TranslateController(LanguageTranslateService languageTranslateService) {
+        this.languageTranslateService = languageTranslateService;
+    }
 
-    @GetMapping("/{langue}/{number}")
-    public ResponseEntity<Object> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number) throws LangueTranslateNotFoundException, LangueTranslateBadRequestException {
+    //@GetMapping(value = "/{langue}/{number}", produces = "application/json;charset=UTF-8")
+    @GetMapping(value = "/{langue}/{number}")
+    public ResponseEntity<Object> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number)
+            throws LangueTranslateNotFoundException, LangueTranslateBadRequestException {
         try {
-            LanguageTranslate languageTranslate = languageTranslateRepo.getByLangueAndNbr(langue, number);
+            //LocalDate date = LocalDate.now();
+            LanguageTranslate languageTranslate = languageTranslateService.getByLangueAndNbr(langue, number);
             logger.info("################# languageTranslate {}", languageTranslate);
 
             return ResponseEntity.ok("La Traduction de : " + languageTranslate.getMessage() + " en " + languageTranslate.getLangue());

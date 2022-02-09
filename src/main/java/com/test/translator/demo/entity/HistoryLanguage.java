@@ -3,14 +3,14 @@ package com.test.translator.demo.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "LANGUAGE_TRANSLATE")
-public class LanguageTranslate {
+@Table(name = "HISTORY_LANGUAGE")
+public class HistoryLanguage {
 
-    public LanguageTranslate(Long id, Integer nbr, String message, String langue) {
+    public HistoryLanguage(Long id, Integer nbr, String langue, String date) {
         this.id = id;
         this.nbr = nbr;
-        this.message = message;
         this.langue = langue;
+        this.date = date;
     }
 
     @GeneratedValue
@@ -20,11 +20,11 @@ public class LanguageTranslate {
     @Column(name = "nbr")
     private Integer nbr;
 
-    @Column(name = "message")
-    private String message;
-
     @Column(name = "langue")
     private String langue;
+
+    @Column(name = "date")
+    private String date;
 
     public Long getId() {
         return id;
@@ -34,20 +34,21 @@ public class LanguageTranslate {
         return nbr;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
     public String getLangue() {
         return langue;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     @Override
     public String toString() {
         return "LanguageTranslate{" +
                 ", number=" + nbr +
-                ", message='" + message +
+                ", message='" + date +
                 ", message='" + langue + '\'' +
                 '}';
     }
+
 }

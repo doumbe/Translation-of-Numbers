@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface LanguageTranslateRepository extends JpaRepository<LanguageTranslate, Long> {
 
     LanguageTranslate getByLangueAndNbr(String langue, Integer number);
+
+     //LanguageTranslate saveHistoryLanguage(String langue, Integer number, String date);
     //List<LanguageTranslate> getLanguageTranslatesByNumberAndByLangue(Integer number, String langue);
 
 }

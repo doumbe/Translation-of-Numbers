@@ -6,14 +6,7 @@ import javax.persistence.*;
 @Table(name = "LANGUAGE_TRANSLATE")
 public class LanguageTranslate {
 
-    public LanguageTranslate(Long id, Integer nbr, String message, String langue) {
-        this.id = id;
-        this.nbr = nbr;
-        this.message = message;
-        this.langue = langue;
-    }
-
-    @GeneratedValue
+    @GeneratedValue()
     @Id
     private Long id;
 
@@ -25,6 +18,12 @@ public class LanguageTranslate {
 
     @Column(name = "langue")
     private String langue;
+
+    public LanguageTranslate(Integer nbr, String message, String langue) {
+        this.nbr = nbr;
+        this.message = message;
+        this.langue = langue;
+    }
 
     public Long getId() {
         return id;

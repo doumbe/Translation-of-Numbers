@@ -4,7 +4,7 @@ import com.test.translator.demo.entity.LanguageTranslate;
 import com.test.translator.demo.enumeration.Language;
 import com.test.translator.demo.exception.LangueTranslateBadRequestException;
 import com.test.translator.demo.exception.LangueTranslateNotFoundException;
-import com.test.translator.demo.repository.LanguageTranslateRepository;
+import com.test.translator.demo.service.HistoryLanguageService;
 import com.test.translator.demo.service.LanguageTranslateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +25,11 @@ public class TranslateController {
 
     private final Logger logger = LoggerFactory.getLogger(TranslateController.class);
     private final LanguageTranslateService languageTranslateService;
+    private final HistoryLanguageService historyLanguageService;
 
-    public TranslateController(LanguageTranslateService languageTranslateService) {
+    public TranslateController(LanguageTranslateService languageTranslateService, HistoryLanguageService historyLanguageService) {
         this.languageTranslateService = languageTranslateService;
+        this.historyLanguageService = historyLanguageService;
     }
 
     //@GetMapping(value = "/{langue}/{number}", produces = "application/json;charset=UTF-8")
@@ -37,7 +38,10 @@ public class TranslateController {
             throws LangueTranslateNotFoundException, LangueTranslateBadRequestException {
         try {
             //LocalDate date = LocalDate.now();
+            // apell service historique pour injecter une ligne dans la table historique his;save(nex historique(langue, number, date.toString)
+
             LanguageTranslate languageTranslate = languageTranslateService.getByLangueAndNbr(langue, number);
+            historyLanguageService.saveHistoryLanguage(languageTranslate);
             logger.info("################# languageTranslate {}", languageTranslate);
 
             return ResponseEntity.ok("La Traduction de : " + languageTranslate.getMessage() + " en " + languageTranslate.getLangue());

@@ -6,13 +6,6 @@ import javax.persistence.*;
 @Table(name = "HISTORY_LANGUAGE")
 public class HistoryLanguage {
 
-    public HistoryLanguage(Long id, Integer nbr, String langue, String date) {
-        this.id = id;
-        this.nbr = nbr;
-        this.langue = langue;
-        this.date = date;
-    }
-
     @GeneratedValue
     @Id
     private Long id;
@@ -25,6 +18,12 @@ public class HistoryLanguage {
 
     @Column(name = "date")
     private String date;
+
+    public HistoryLanguage(Integer nbr, String langue, String date) {
+        this.nbr = nbr;
+        this.langue = langue;
+        this.date = date;
+    }
 
     public Long getId() {
         return id;

@@ -37,9 +37,6 @@ public class TranslateController {
     public ResponseEntity<Object> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number)
             throws LangueTranslateNotFoundException, LangueTranslateBadRequestException {
         try {
-            //LocalDate date = LocalDate.now();
-            // apell service historique pour injecter une ligne dans la table historique his;save(nex historique(langue, number, date.toString)
-
             LanguageTranslate languageTranslate = languageTranslateService.getByLangueAndNbr(langue, number);
             historyLanguageService.saveHistoryLanguage(languageTranslate);
             logger.info("################# languageTranslate {}", languageTranslate);

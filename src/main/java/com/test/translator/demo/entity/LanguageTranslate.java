@@ -8,7 +8,7 @@ public class LanguageTranslate {
 
     @GeneratedValue()
     @Id
-    private Long id;
+    private String id;
 
     @Column(name = "nbr")
     private Integer nbr;
@@ -19,13 +19,23 @@ public class LanguageTranslate {
     @Column(name = "langue")
     private String langue;
 
-    public LanguageTranslate(Integer nbr, String message, String langue) {
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setNbr(Integer nbr) {
         this.nbr = nbr;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setLangue(String langue) {
         this.langue = langue;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -40,6 +50,7 @@ public class LanguageTranslate {
     public String getLangue() {
         return langue;
     }
+
 
     @Override
     public String toString() {

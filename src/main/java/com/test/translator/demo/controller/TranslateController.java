@@ -1,67 +1,61 @@
 package com.test.translator.demo.controller;
 
-import com.test.translator.demo.entity.LanguageTranslate;
-import com.test.translator.demo.enumeration.Language;
-import com.test.translator.demo.exception.LangueTranslateBadRequestException;
-import com.test.translator.demo.exception.LangueTranslateNotFoundException;
-import com.test.translator.demo.service.HistoryLanguageService;
+import com.test.translator.demo.entity.HistoryLanguage;
 import com.test.translator.demo.service.LanguageTranslateService;
+import com.test.translator.demo.service.dto.LanguageTranslateDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/translate")
 public class TranslateController {
 
+    static final String HISTORY_URI = "http://localhost:9090/api/history";
     private final Logger logger = LoggerFactory.getLogger(TranslateController.class);
     private final LanguageTranslateService languageTranslateService;
-    private final HistoryLanguageService historyLanguageService;
+    private final RestTemplate restTemplate;
 
-    public TranslateController(LanguageTranslateService languageTranslateService, HistoryLanguageService historyLanguageService) {
+    public TranslateController(LanguageTranslateService languageTranslateService, RestTemplate restTemplate) {
         this.languageTranslateService = languageTranslateService;
-        this.historyLanguageService = historyLanguageService;
+        this.restTemplate = restTemplate;
     }
 
     //@GetMapping(value = "/{langue}/{number}", produces = "application/json;charset=UTF-8")
     @GetMapping(value = "/{langue}/{number}")
-    public ResponseEntity<Object> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number)
-            throws LangueTranslateNotFoundException, LangueTranslateBadRequestException {
-        try {
-            LanguageTranslate languageTranslate = languageTranslateService.getByLangueAndNbr(langue, number);
-            historyLanguageService.saveHistoryLanguage(languageTranslate);
-            logger.info("################# languageTranslate {}", languageTranslate);
+    //public ResponseEntity<LanguageTranslate> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number) throws LangueTranslateNotFoundException {
+    public ResponseEntity<LanguageTranslateDTO> toTranslate(@PathVariable("langue") String langue, @PathVariable("number") Integer number) throws IOException {
 
-            return ResponseEntity.ok("La Traduction de : " + languageTranslate.getMessage() + " en " + languageTranslate.getLangue());
-        } catch (Exception exception) {
-            return checkVariables(langue, number);
-        }
+        postHistory(langue, number);
+
+        LanguageTranslateDTO dto = languageTranslateService.getByLangueAndNbr(langue, number);
+
+        logger.info("################# languageTranslate {}", dto);
+
+        //return ResponseEntity.ok(languageTranslate);
+        return ResponseEntity.ok().body(dto);
     }
 
-    private ResponseEntity<Object> checkVariables(String langue, Integer nb) {
-        Map<String, Object> result = new HashMap<>();
 
-        if (Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb < 0 || nb > 30)) {
-            result.put("msg", "Veuillez saisir une langue reconnue et un numero valide (0 et 30) !");
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        } else if (Arrays.stream(Language.values()).noneMatch(item -> item.name().equals(langue)) && (nb >= 0 && nb <= 30)) {
-            result.put("msg", "Votre langue n'est pas reconnue !");
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        } else if (nb < 0 || nb > 30) {
-            result.put("msg", "Veuillez saisir un nb entre 0 et 30");
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        } else {
-            result.put("msg", "veuillez saisir une URL valide !");
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
+    private void postHistory(String langue, Integer number) {
+        logger.info("################ debut post");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        LocalDate date = LocalDate.now();
+        HistoryLanguage history = new HistoryLanguage(number, langue, date.toString());
+        HttpEntity<HistoryLanguage> request = new HttpEntity(history, headers);
+        HistoryLanguage response = restTemplate.postForObject(HISTORY_URI, request, HistoryLanguage.class);
+        logger.info("################ post history: {}", response);
     }
 }
